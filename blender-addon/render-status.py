@@ -8,8 +8,10 @@ bl_info = {
 }
 
 import bpy
+import requests
 from bpy.types import Operator, AddonPreferences
 from bpy.props import StringProperty, IntProperty, BoolProperty
+from bpy.app.handlers import persistent
 
 class ExampleAddonPreferences(AddonPreferences):
     # this must match the add-on name, use '__package__'
@@ -32,7 +34,6 @@ class ExampleAddonPreferences(AddonPreferences):
     def draw(self, context):
         layout = self.layout
         layout.label(text="This is a preferences view for our add-on")
-        layout.prop(self, "filepath")
         layout.prop(self, "sitepath")
         layout.prop(self, "number")
         layout.prop(self, "boolean")
@@ -55,6 +56,22 @@ class OBJECT_OT_addon_prefs_example(Operator):
 
         return {'FINISHED'}
 
+# The postFrame Submit Script
+@persistent
+def submitFrame(scene):
+    url = 'http://127.0.0.1:5000/update'
+    currentFilename = bpy.path.basename(bpy.data.filepath)
+    submitData = {'name': 'unsavedBlenderScene'}
+    if currentFilename != '':
+        submitData['name'] = currentFilename
+    submitData['firstFrame'] = scene.frame_start
+    submitData['lastFrame'] = scene.frame_end
+    submitData['latestFrame'] = scene.frame_current
+
+    x = requests.post(url, data = submitData)
+    print(x)
+
+bpy.app.handlers.frame_change_pre.append(submitFrame)
 
 # Registration
 def register():

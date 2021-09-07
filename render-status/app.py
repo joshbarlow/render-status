@@ -56,7 +56,7 @@ def update():
     latestFrame = request.form.get("latestFrame")
     length = int(lastFrame) - int(firstFrame) + 1
 
-    print("submited data - jobName: {}, firstFrame: {}, lastframe: {}, latestFrame: {}, length: {}".format(jobName,firstFrame,lastFrame,latestFrame,length))
+    # print("submited data - jobName: {}, firstFrame: {}, lastframe: {}, latestFrame: {}, length: {}".format(jobName,firstFrame,lastFrame,latestFrame,length))
 
     connection = sqlite3.connect("renders.db")
     connection.row_factory = sqlite3.Row
@@ -83,3 +83,22 @@ def update():
 def submit():
 
     return render_template("submit.html")
+
+@app.route("/delete", methods=["POST"])
+
+def delete():
+
+    jobName = request.form.get("name")
+
+    print(jobName)
+
+    connection = sqlite3.connect("renders.db")
+    connection.row_factory = sqlite3.Row
+    c = connection.cursor()
+    params = (str(jobName),)
+    c.execute("DELETE FROM jobs WHERE name = ?", params)
+
+    connection.commit()
+    connection.close()
+
+    return redirect('/')

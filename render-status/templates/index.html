@@ -14,7 +14,12 @@
           <div class="card-text">Start Time: {{ job.startTime }}</div>
         </div>
         <div class="col-auto">
-          <a href="#" class="card-link">Delete Job</a>
+          <form action="/delete" method="post">
+            <div class="form-group" style="display: none">
+                <input autocomplete="off" autofocus class="form-control" name="name" value="{{ job.name }}" type="text">
+            </div>
+          <button class="btn btn-primary" type="submit">Delete</button>
+        </form>
           </div>
           </div>
         </div>

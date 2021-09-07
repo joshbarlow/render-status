@@ -49,7 +49,7 @@ class OBJECT_OT_addon_prefs_example(Operator):
         addon_prefs = preferences.addons[__name__].preferences
 
         info = ("Path: %s, Number: %d, Boolean %r" %
-                (addon_prefs.filepath, addon_prefs.number, addon_prefs.boolean))
+                (addon_prefs.sitepath, addon_prefs.number, addon_prefs.boolean))
 
         self.report({'INFO'}, info)
         print(info)
@@ -59,7 +59,8 @@ class OBJECT_OT_addon_prefs_example(Operator):
 # The postFrame Submit Script
 @persistent
 def submitFrame(scene):
-    url = 'http://127.0.0.1:5000/update'
+    #url = 'http://127.0.0.1:5000/update'
+    url = bpy.context.user_preferences.addons[__name__].preferences.sitepath
     currentFilename = bpy.path.basename(bpy.data.filepath)
     submitData = {'name': 'unsavedBlenderScene'}
     if currentFilename != '':
@@ -71,6 +72,7 @@ def submitFrame(scene):
     x = requests.post(url, data = submitData)
     print(x)
 
+#bpy.app.handlers.render_post.append(submitFrame)
 bpy.app.handlers.frame_change_pre.append(submitFrame)
 
 # Registration

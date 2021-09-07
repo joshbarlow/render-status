@@ -40,6 +40,11 @@ def index():
 
             jodDict['progress'] = int(percent)
 
+            if (lastFrame == latestFrame):
+                jodDict['style'] = 'bg-success'
+            else:
+                jodDict['style'] = 'progress-bar-striped progress-bar-animated'
+
             jobs.append(jodDict)
 
         print(jobs)

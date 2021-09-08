@@ -13,6 +13,41 @@
 
         <title>Render Status</title>
 
+        <script>
+
+            function httpGet(theUrl)
+            {
+              let xmlHttp = new XMLHttpRequest();
+              xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+              xmlHttp.send( null );
+              return xmlHttp.responseText;
+            }
+
+            // Toggles visibility of greeting
+            function increment()
+            {
+
+              let jsonResult = JSON.parse(httpGet("/status"));
+
+              console.log(jsonResult);
+
+              let x = document.getElementsByClassName("progress-bar");
+              let i;
+              for (i = 0; i < x.length; i++) {
+
+                let newPercent = jsonResult[x[i].getAttribute("name")];
+                console.log(x[i].getAttribute("name"));
+
+                let rand = Math.floor(Math.random() * 100);
+                x[i].style.width = newPercent.toString() + "%" ;
+                x[i].innerHTML = newPercent.toString() + "%" ;
+              }
+            }
+
+            window.setInterval(increment, 1000);
+
+        </script>
+
     </head>
     <body>
       <!-- As a heading -->

@@ -2,6 +2,7 @@ import os
 
 import sqlite3
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
+import json
 
 # Configure application
 app = Flask(__name__)
@@ -107,3 +108,33 @@ def delete():
     connection.close()
 
     return redirect('/')
+
+@app.route("/status", methods=["GET"])
+
+def status():
+
+    connection = sqlite3.connect("renders.db")
+    connection.row_factory = sqlite3.Row
+    c = connection.cursor()
+    c.execute("select * from jobs ORDER BY startTime DESC")
+
+    jobs = {}
+    for r in c.fetchall():
+
+        jodDict = dict(r)
+
+        firstFrame = int(jodDict['firstFrame'])
+        lastFrame = int(jodDict['lastFrame'])
+        latestFrame = int(jodDict['latestFrame'])
+        name = jodDict['name']
+
+        percent = (100.0 / (lastFrame - firstFrame + 1)) * (latestFrame - firstFrame + 1);
+        
+        jobs[name] = int(percent)
+
+    connection.commit()
+    connection.close()
+
+    json_object = json.dumps(jobs, indent = 4)
+
+    return json_object

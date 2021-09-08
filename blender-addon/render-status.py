@@ -59,8 +59,8 @@ class OBJECT_OT_addon_prefs_example(Operator):
 # The postFrame Submit Script
 @persistent
 def submitFrame(scene):
-    #url = 'http://127.0.0.1:5000/update'
-    url = bpy.context.user_preferences.addons[__name__].preferences.sitepath
+    url = 'http://127.0.0.1:5000/update'
+    #url = bpy.context.user_preferences.addons[__name__].preferences.sitepath
     currentFilename = bpy.path.basename(bpy.data.filepath)
     submitData = {'name': 'unsavedBlenderScene'}
     if currentFilename != '':

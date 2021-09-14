@@ -72,8 +72,8 @@ def submitFrame(scene):
     x = requests.post(url, data = submitData)
     print(x)
 
-#bpy.app.handlers.render_post.append(submitFrame)
-bpy.app.handlers.frame_change_pre.append(submitFrame)
+bpy.app.handlers.render_post.append(submitFrame)
+#bpy.app.handlers.frame_change_pre.append(submitFrame)
 
 # Registration
 def register():

@@ -116,9 +116,9 @@ def status():
     connection = sqlite3.connect("renders.db")
     connection.row_factory = sqlite3.Row
     c = connection.cursor()
-    c.execute("select * from jobs ORDER BY startTime DESC")
+    c.execute("select * from jobs ORDER BY startTime")
 
-    jobs = {}
+    jobs = []
     for r in c.fetchall():
 
         jodDict = dict(r)
@@ -129,8 +129,11 @@ def status():
         name = jodDict['name']
 
         percent = (100.0 / (lastFrame - firstFrame + 1)) * (latestFrame - firstFrame + 1);
-        
-        jobs[name] = int(percent)
+
+        currentJob = {}
+        currentJob['name'] = name
+        currentJob['percent'] = int(percent)
+        jobs.append(currentJob)
 
     connection.commit()
     connection.close()

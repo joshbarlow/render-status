@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 
 <html lang="en">
-
     <head>
 
         <meta charset="utf-8">
         <meta name="viewport" content="initial-scale=1, width=device-width">
 
         <link href="/static/favicon.ico" rel="icon">
-
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
 
         <title>Render Status</title>
 
     </head>
     <body>
+    
       <!-- As a heading -->
       <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid">
@@ -22,6 +21,7 @@
         </div>
       </nav>
 
+      <!-- the job card template -->
       <template id="jobcard">
         <div id = 'mainCard' class="card" style="width: 100%;">
           <div class="card-body">
@@ -33,116 +33,11 @@
         </div>
       </template>
 
-      <div id='cardContainter' style="width: 100%;">
-      </div>
-
-
+      <!-- container for the jobcards -->
+      <div id='cardContainter' style="width: 100%;"></div>
 
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
-
-      <script>
-
-          function httpGet(theUrl)
-          {
-            let xmlHttp = new XMLHttpRequest();
-            xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-            xmlHttp.send( null );
-            return xmlHttp.responseText;
-          }
-
-          // Toggles visibility of greeting
-          function increment()
-          {
-
-            let jsonResult = JSON.parse(httpGet("/status"));
-
-            //console.log(jsonResult);
-
-            // first lets delete any jobs that don't exist anymore?
-            let currentCards = document.getElementsByClassName("card");
-            let cardIds = [];
-            let jsonIds = [];
-            for (var job of jsonResult)
-            {
-              jsonIds.push(job.name);
-            }
-
-            for (var card of currentCards)
-            {
-              if (jsonIds.indexOf(card.id.toString()) == -1)
-              {
-                card.remove();
-                console.log(card.id + ' removed');
-              }
-            }
-
-            currentCards = document.getElementsByClassName("card");
-
-            for (var card of currentCards)
-            {
-              if (jsonIds.indexOf(card.id.toString()) >= 0)
-              {
-                cardIds.push(card.id.toString());
-              }
-            }
-
-            console.log(cardIds);
-
-
-            // then lets make a new card for each job that needs to exist?
-
-
-            let cardContainer = document.querySelector("#cardContainter");
-            let template = document.getElementsByTagName("template")[0];
-
-            for (var job of jsonResult)
-            {
-              console.log(job.name + ' ' + cardIds.indexOf(job.name.toString()));
-              if(cardIds.indexOf(job.name.toString()) == -1)
-              {
-                console.log(job.name + ' doesnt exist in document');
-                // Clone the new row and insert it into the table
-                let clone = template.content.cloneNode(true);
-                let mainCard = clone.querySelector("#mainCard");
-                mainCard.id = job.name;
-                let title = clone.querySelector("#cardTitle");
-                title.innerHTML = job.name;
-                let prog = clone.querySelector("#prog");
-                prog.innerHTML = job.percent + '%';
-                prog.style.width = job.percent + '%';
-
-                //cardContainer.appendChild(clone);
-                cardContainer.insertBefore(clone, cardContainer.firstChild);
-              }
-            }
-
-            // then lets just update all the cards that are now shown
-
-            currentCards = document.getElementsByClassName("card");
-
-            for (var card of currentCards)
-            {
-              let currentId = card.id;
-              let progress = 0;
-              for (var job of jsonResult)
-              {
-                if (currentId == job.name)
-                {
-                  progress = job.percent;
-                }
-              }
-              //let prog = document.getElementById(card.id.toString()).querySelector('#prog')
-              let prog = card.querySelector("#prog");
-              prog.innerHTML = progress + '%';
-              prog.style.width = progress + '%';
-            }
-
-          }
-          increment();
-          increment();
-          window.setInterval(increment, 1000);
-
-      </script>
+      <script src="/static/renderstatus.js"></script>
 
     </body>
 </html>

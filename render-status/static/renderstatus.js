@@ -6,13 +6,27 @@ function httpGet(theUrl)
     return xmlHttp.responseText;
 }
 
-// Toggles visibility of greeting
+function notifyComplete(jobname) {
+    // notify the user that the job is complete
+    var notification = new Notification(jobname + " has finished rendering!");
+}
+
+function notifyCheck() {
+    if (Notification.permission !== "denied") {
+        Notification.requestPermission().then(function (permission) {
+          // If the user accepts, let's create a notification
+          if (permission === "granted") {
+              console.log("Notifications Enabled");
+            // var notification = new Notification("notifications enabled!");
+          }
+        });
+      }
+
+}
+
 function increment()
 {
-
     let jsonResult = JSON.parse(httpGet("/status"));
-
-    //console.log(jsonResult);
 
     // first delete any jobs that don't exist anymore
     let currentCards = document.getElementsByClassName("card");
@@ -89,6 +103,12 @@ function increment()
         }
 
         let prog = card.querySelector("#prog");
+
+        if (prog.innerHTML != "100%" && progress == 100)
+        {
+            notifyComplete(job.name);
+        }
+
         prog.innerHTML = progress + '%';
         prog.style.width = progress + '%';
         prog.className = "progress-bar progress-bar-striped progress-bar-animated";
@@ -102,4 +122,5 @@ function increment()
 }
 
 increment();
+notifyCheck()
 window.setInterval(increment, 1000);

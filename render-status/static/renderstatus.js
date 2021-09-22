@@ -106,7 +106,7 @@ function increment()
 
         if (prog.innerHTML != "100%" && progress == 100)
         {
-            notifyComplete(job.name);
+            notifyComplete(currentId);
         }
 
         prog.innerHTML = progress + '%';

@@ -13,30 +13,20 @@ from bpy.types import Operator, AddonPreferences
 from bpy.props import StringProperty, IntProperty, BoolProperty
 from bpy.app.handlers import persistent
 
-class ExampleAddonPreferences(AddonPreferences):
+class ExampleAddonPreferences(bpy.types.AddonPreferences):
     # this must match the add-on name, use '__package__'
     # when defining this in a submodule of a python package.
     bl_idname = __name__
 
-    sitepath: StringProperty(
+    sitepath: bpy.props.StringProperty(
         name="Example Site URL",
         subtype='NONE',
-    )
-    number: IntProperty(
-        name="Example Number",
-        default=4,
-    )
-    boolean: BoolProperty(
-        name="Example Boolean",
-        default=False,
     )
 
     def draw(self, context):
         layout = self.layout
-        layout.label(text="This is a preferences view for our add-on")
+        layout.label(text="Enter the url of the render-status site eg. 127.0.0.1:5000")
         layout.prop(self, "sitepath")
-        layout.prop(self, "number")
-        layout.prop(self, "boolean")
 
 class OBJECT_OT_addon_prefs_example(Operator):
     """Display example preferences"""
@@ -59,8 +49,13 @@ class OBJECT_OT_addon_prefs_example(Operator):
 # The postFrame Submit Script
 @persistent
 def submitFrame(scene):
-    url = 'http://127.0.0.1:5000/update'
-    #url = bpy.context.user_preferences.addons[__name__].preferences.sitepath
+    # url = 'http://127.0.0.1:5000/update'
+    url = str(bpy.context.preferences.addons["render-status"].preferences.sitepath) + '/update'
+
+    if 'http://' not in url:
+        url = 'http://' + url
+
+    print(url)
     currentFilename = bpy.path.basename(bpy.data.filepath)
     submitData = {'name': 'unsavedBlenderScene'}
     if currentFilename != '':

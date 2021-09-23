@@ -78,7 +78,9 @@ function increment()
             let prog = clone.querySelector("#prog");
             prog.innerHTML = job.percent + '%';
             prog.style.width = job.percent + '%';
-            // set style to green if 100%!
+            
+            let deleteMe = clone.querySelector("#deleteName");
+            deleteMe.value = job.name;
 
 
             //cardContainer.appendChild(clone);

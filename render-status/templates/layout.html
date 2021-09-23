@@ -25,7 +25,19 @@
       <template id="jobcard">
         <div id = 'mainCard' class="card" style="width: 100%;">
           <div class="card-body">
-            <h5 id='cardTitle' class="card-title"></h5>
+            <div class="row">
+              <div class="col-md-auto">
+            <h4 id='cardTitle' class="card-title"></h4>
+          </div>
+            <div class="col-6">
+              <form action="/delete" method="post">
+                <div class="form-group" style="display: none">
+                    <input id='deleteName' autocomplete="off" autofocus class="form-control" name="name" value="test" type="text">
+                </div>
+            <button type="submit" class="btn btn-sm btn-outline-dark">Delete</button>
+              </form>
+          </div>
+          </div>
             <div class="progress">
               <div id="prog" class="progress-bar" role="progressbar" style="width: 10%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">10%</div>
             </div>

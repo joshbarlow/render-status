@@ -19,7 +19,7 @@ class ExampleAddonPreferences(bpy.types.AddonPreferences):
     bl_idname = __name__
 
     sitepath: bpy.props.StringProperty(
-        name="Example Site URL",
+        name="Render-Status URL",
         subtype='NONE',
     )
 

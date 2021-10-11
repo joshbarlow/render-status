@@ -10,43 +10,40 @@ app = Flask(__name__)
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
-@app.route("/", methods=["GET", "POST"])
+# the main page
+@app.route("/", methods=["GET"])
 def index():
-    if request.method == "POST":
+    connection = sqlite3.connect("renders.db")
+    connection.row_factory = sqlite3.Row
+    c = connection.cursor()
+    c.execute('select * from jobs ORDER BY startTime DESC')
+    jobs = []
+    for r in c.fetchall():
 
-        return "post aaa"
+        jodDict = dict(r)
 
-    else:
-        connection = sqlite3.connect("renders.db")
-        connection.row_factory = sqlite3.Row
-        c = connection.cursor()
-        c.execute('select * from jobs ORDER BY startTime DESC')
-        jobs = []
-        for r in c.fetchall():
+        firstFrame = int(jodDict['firstFrame'])
+        lastFrame = int(jodDict['lastFrame'])
+        latestFrame = int(jodDict['latestFrame'])
 
-            jodDict = dict(r)
+        print("firstFrame: " + str(firstFrame) + " lastFrame: " + str(lastFrame) + " latestFrame: " + str(latestFrame))
 
-            firstFrame = int(jodDict['firstFrame'])
-            lastFrame = int(jodDict['lastFrame'])
-            latestFrame = int(jodDict['latestFrame'])
+        percent = (100.0 / (lastFrame - firstFrame + 1)) * (latestFrame - firstFrame + 1);
 
-            print("firstFrame: " + str(firstFrame) + " lastFrame: " + str(lastFrame) + " latestFrame: " + str(latestFrame))
+        jodDict['progress'] = int(percent)
 
-            percent = (100.0 / (lastFrame - firstFrame + 1)) * (latestFrame - firstFrame + 1);
+        if (lastFrame == latestFrame):
+            jodDict['style'] = 'bg-success'
+        else:
+            jodDict['style'] = 'progress-bar-striped progress-bar-animated'
 
-            jodDict['progress'] = int(percent)
+        jobs.append(jodDict)
 
-            if (lastFrame == latestFrame):
-                jodDict['style'] = 'bg-success'
-            else:
-                jodDict['style'] = 'progress-bar-striped progress-bar-animated'
+    print(jobs)
 
-            jobs.append(jodDict)
+    return render_template("index.html", jobs = jobs)
 
-        print(jobs)
-
-        return render_template("index.html", jobs = jobs)
-
+# the page used to add new jobs or update existing jobs.
 @app.route("/update", methods=["POST"])
 
 def update():
@@ -56,8 +53,6 @@ def update():
     lastFrame = request.form.get("lastFrame")
     latestFrame = request.form.get("latestFrame")
     length = int(lastFrame) - int(firstFrame) + 1
-
-    # print("submited data - jobName: {}, firstFrame: {}, lastframe: {}, latestFrame: {}, length: {}".format(jobName,firstFrame,lastFrame,latestFrame,length))
 
     connection = sqlite3.connect("renders.db")
     connection.row_factory = sqlite3.Row
@@ -79,6 +74,7 @@ def update():
 
     return returnVal
 
+# a test page for manually submiting jobs if you can't use blender
 @app.route("/submit", methods=["GET"])
 
 def submit():
@@ -87,6 +83,7 @@ def submit():
 
 @app.route("/delete", methods=["POST"])
 
+# the page used for deleting jobs
 def delete():
 
     jobName = request.form.get("name")
@@ -104,6 +101,7 @@ def delete():
 
     return redirect('/')
 
+# the json of the current status of the renders database
 @app.route("/status", methods=["GET"])
 
 def status():

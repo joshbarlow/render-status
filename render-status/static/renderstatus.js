@@ -1,7 +1,8 @@
-function httpGet(theUrl)
+function httpGet(URL)
 {
+    // get html
     let xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.open( "GET", URL, false );
     xmlHttp.send( null );
     return xmlHttp.responseText;
 }
@@ -12,6 +13,7 @@ function notifyComplete(jobname) {
 }
 
 function notifyCheck() {
+    // function to check if browser notifications are enabled
     if (Notification.permission !== "denied") {
         Notification.requestPermission().then(function (permission) {
           // If the user accepts, let's create a notification
@@ -21,14 +23,16 @@ function notifyCheck() {
           }
         });
       }
-
 }
 
 function increment()
 {
+    // function that runs continuously, checking the webapp for render updates, and updating the page.
+
+    // get the json render status from the webapp
     let jsonResult = JSON.parse(httpGet("/status"));
 
-    // first delete any jobs that don't exist anymore
+    // first delete any jobs that don't exist anymore in the new json
     let currentCards = document.getElementsByClassName("card");
     let cardIds = [];
     let jsonIds = [];
@@ -58,7 +62,7 @@ function increment()
 
     console.log(cardIds);
 
-    // then make a new card for each job that needs to exist?
+    // then make a new card for each new job in the json.
 
     let cardContainer = document.querySelector("#cardContainter");
     let template = document.getElementsByTagName("template")[0];
@@ -82,13 +86,11 @@ function increment()
             let deleteMe = clone.querySelector("#deleteName");
             deleteMe.value = job.name;
 
-
-            //cardContainer.appendChild(clone);
             cardContainer.insertBefore(clone, cardContainer.firstChild);
         }
     }
 
-    // then just update all the cards that are now shown
+    // then update all the cards that are now shown
 
     currentCards = document.getElementsByClassName("card");
 
@@ -122,6 +124,8 @@ function increment()
     }
 
 }
+
+// increment once to build the page, then check if browser notifications are enabled, then continuosly update the page.
 
 increment();
 notifyCheck()

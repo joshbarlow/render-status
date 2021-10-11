@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Render Status",
     "author": "Josh Barlow",
-    "version": (0, 1),
+    "version": (1, 0),
     "blender": (2, 80, 0),
     "doc_url": "https://github.com/joshbarlow/render-status",
     "category": "Render",
@@ -13,9 +13,8 @@ from bpy.types import Operator, AddonPreferences
 from bpy.props import StringProperty, IntProperty, BoolProperty
 from bpy.app.handlers import persistent
 
+# define addon preferences
 class ExampleAddonPreferences(bpy.types.AddonPreferences):
-    # this must match the add-on name, use '__package__'
-    # when defining this in a submodule of a python package.
     bl_idname = __name__
 
     sitepath: bpy.props.StringProperty(
@@ -28,10 +27,11 @@ class ExampleAddonPreferences(bpy.types.AddonPreferences):
         layout.label(text="Enter the url of the render-status site eg. 127.0.0.1:5000")
         layout.prop(self, "sitepath")
 
+# create the preferences
 class OBJECT_OT_addon_prefs_example(Operator):
-    """Display example preferences"""
-    bl_idname = "object.addon_prefs_example"
-    bl_label = "Add-on Preferences Example"
+    """Display preferences"""
+    bl_idname = "object.renderstatus_prefs"
+    bl_label = "Render Status Preferences"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -46,10 +46,9 @@ class OBJECT_OT_addon_prefs_example(Operator):
 
         return {'FINISHED'}
 
-# The postFrame Submit Script
+# The postFrame Submit Script, this is run after each frame is rendered.
 @persistent
 def submitFrame(scene):
-    # url = 'http://127.0.0.1:5000/update'
     url = str(bpy.context.preferences.addons["render-status"].preferences.sitepath) + '/update'
 
     if 'http://' not in url:
@@ -68,7 +67,6 @@ def submitFrame(scene):
     print(x)
 
 bpy.app.handlers.render_post.append(submitFrame)
-#bpy.app.handlers.frame_change_pre.append(submitFrame)
 
 # Registration
 def register():
